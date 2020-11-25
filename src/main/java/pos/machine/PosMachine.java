@@ -5,7 +5,7 @@ import products.Product;
 import java.util.*;
 
 public class PosMachine {
-   public static List<Product> ITEM_INFOS = ItemDataLoader.loadAllItemInfos();
+    public static List<Product> ITEM_INFOS = ItemDataLoader.loadAllItemInfos();
 
     static List<Product> getItemInfo(List<String> barcodes) {
         List<Product> test = ItemDataLoader.loadAllItemInfos();
@@ -24,8 +24,7 @@ public class PosMachine {
         for (Product i : itemInfoList) {
             if (!result.containsKey(i.getName())) {
                 result.put(i.getName(), 1);
-            }
-            else {
+            } else {
                 result.put(i.getName(), result.get(i.getName()) + 1);
             }
         }
@@ -40,8 +39,7 @@ public class PosMachine {
                 temp.add(i.getPrice());
                 temp.add(i.getPrice());
                 result.put(i.getName(), temp);
-            }
-            else {
+            } else {
                 List<Integer> temp = result.get(i.getName());
                 temp.set(1, temp.get(1) + i.getPrice());
                 result.put(i.getName(), temp);
@@ -51,18 +49,15 @@ public class PosMachine {
     }
 
 
-    static Map<String, List<Integer>> countItemAndCalculateSubtotal(List<Product> itemInfoList) {
-        Map<String, List<Integer>> result = new HashMap<>();
+    static Map<String, ItemInfo> countItemAndCalculateSubtotal(List<Product> itemInfoList) {
+        Map<String, ItemInfo> result = new HashMap<>();
         Map<String, Integer> countMap = countItem(itemInfoList);
         Map<String, List<Integer>> subTotalMap = calculateSubTotal(itemInfoList);
 
-        for (Map.Entry<String, Integer> c : countMap.entrySet()) {
-            if (!result.containsKey(c.getKey())) {
-                List<Integer> temp = new ArrayList<>();
-                temp.add(c.getValue());
-                temp.add(subTotalMap.get(c.getKey()).get(0));
-                temp.add(subTotalMap.get(c.getKey()).get(1));
-                result.put(c.getKey(), temp);
+        for (Map.Entry<String, Integer> count : countMap.entrySet()) {
+            if (!result.containsKey(count.getKey())) {
+                ItemInfo info = new ItemInfo(count.getValue(), subTotalMap.get(count.getKey()).get(0), subTotalMap.get(count.getKey()).get(1));
+                result.put(count.getKey(), info);
             }
         }
 
@@ -71,13 +66,13 @@ public class PosMachine {
 
     public static String printReceipt(List<String> barcodes) {
         List<Product> itemInfoList = getItemInfo(barcodes);
-        Map<String, List<Integer>> itemCountAndSubTotal = countItemAndCalculateSubtotal(itemInfoList);
+        Map<String, ItemInfo> itemCountAndSubTotal = countItemAndCalculateSubtotal(itemInfoList);
         Integer total = 0;
         String str = "***<store earning no money>Receipt***\n";
 
-        for (Map.Entry<String, List<Integer>> m : itemCountAndSubTotal.entrySet()) {
-            total += m.getValue().get(2);
-            str += "Name: " + m.getKey() + ", Quantity: " + m.getValue().get(0) + ", Unit price: " + m.getValue().get(1) + " (yuan), Subtotal: " + m.getValue().get(2) + " (yuan)\n";
+        for (Map.Entry<String, ItemInfo> item : itemCountAndSubTotal.entrySet()) {
+            total += item.getValue().getSubTotal();
+            str += "Name: " + item.getKey() + ", Quantity: " + item.getValue().getQuantity() + ", Unit price: " + item.getValue().getUnitPrice() + " (yuan), Subtotal: " + item.getValue().getSubTotal() + " (yuan)\n";
         }
         str += "----------------------\n";
         str += "Total: " + total + " (yuan)\n";
