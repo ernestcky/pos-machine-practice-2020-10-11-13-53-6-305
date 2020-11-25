@@ -12,7 +12,7 @@ public class PosMachine {
         List<Product> result = new ArrayList<>();
         for (String barcode : barcodes) {
             for (Product item : test) {
-                if (item.barcode.equals(barcode))
+                if (item.getBarcode().equals(barcode))
                     result.add(item);
             }
         }
@@ -22,11 +22,11 @@ public class PosMachine {
     static Map<String, Integer> countItem(List<Product> itemInfoList) {
         Map<String, Integer> result = new HashMap();
         for (Product i : itemInfoList) {
-            if (!result.containsKey(i.getClass().getName())) {
-                result.put(i.getClass().getName(), 1);
+            if (!result.containsKey(i.getName())) {
+                result.put(i.getName(), 1);
             }
             else {
-                result.put(i.getClass().getName(), result.get(i.getClass().getName()) + 1);
+                result.put(i.getName(), result.get(i.getName()) + 1);
             }
         }
         return result;
@@ -35,16 +35,16 @@ public class PosMachine {
     static Map<String, List<Integer>> calculateSubTotal(List<Product> itemInfoList) {
         Map<String, List<Integer>> result = new HashMap<>();
         for (Product i : itemInfoList) {
-            if (!result.containsKey(i.getClass().getName())) {
+            if (!result.containsKey(i.getName())) {
                 List<Integer> temp = new ArrayList<Integer>();
-                temp.add(i.price);
-                temp.add(i.price);
-                result.put(i.getClass().getName(), temp);
+                temp.add(i.getPrice());
+                temp.add(i.getPrice());
+                result.put(i.getName(), temp);
             }
             else {
-                List<Integer> temp = result.get(i.getClass().getName());
-                temp.set(1, temp.get(1) + i.price);
-                result.put(i.getClass().getName(), temp);
+                List<Integer> temp = result.get(i.getName());
+                temp.set(1, temp.get(1) + i.getPrice());
+                result.put(i.getName(), temp);
             }
         }
         return result;

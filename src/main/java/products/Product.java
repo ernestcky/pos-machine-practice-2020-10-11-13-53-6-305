@@ -1,6 +1,16 @@
 package products;
 
 public abstract class Product {
-    public String barcode;
-    public int price;
+    private String barcode;
+    private int price;
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public abstract String getName();
 }
