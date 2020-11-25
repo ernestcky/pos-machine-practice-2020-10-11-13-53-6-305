@@ -1,57 +1,57 @@
 package pos.machine;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import products.Product;
+
+import java.util.*;
 
 public class PosMachine {
-    static List<ItemInfo> ITEM_INFOS = ItemDataLoader.loadAllItemInfos();
+   public static List<Product> ITEM_INFOS = ItemDataLoader.loadAllItemInfos();
 
-    List<ItemInfo> getItemInfo(List<String> barcodes) {
-        List<ItemInfo> result = new ArrayList<>();
+    static List<Product> getItemInfo(List<String> barcodes) {
+        List<Product> test = ItemDataLoader.loadAllItemInfos();
+        List<Product> result = new ArrayList<>();
         for (String barcode : barcodes) {
-            for (ItemInfo item : ITEM_INFOS) {
-                if (item.getBarcode().equals(barcode))
+            for (Product item : test) {
+                if (item.barcode.equals(barcode))
                     result.add(item);
             }
         }
         return result;
     }
 
-    Map<String, Integer> countItem(List<ItemInfo> itemInfoList) {
+    static Map<String, Integer> countItem(List<Product> itemInfoList) {
         Map<String, Integer> result = new HashMap();
-        for (ItemInfo i : itemInfoList) {
-            if (!result.containsKey(i.getName())) {
-                result.put(i.getName(), 1);
+        for (Product i : itemInfoList) {
+            if (!result.containsKey(i.getClass().getName())) {
+                result.put(i.getClass().getName(), 1);
             }
             else {
-                result.put(i.getName(), result.get(i.getName()) + 1);
+                result.put(i.getClass().getName(), result.get(i.getClass().getName()) + 1);
             }
         }
         return result;
     }
 
-    Map<String, List<Integer>> calculateSubTotal(List<ItemInfo> itemInfoList) {
+    static Map<String, List<Integer>> calculateSubTotal(List<Product> itemInfoList) {
         Map<String, List<Integer>> result = new HashMap<>();
-        for (ItemInfo i : itemInfoList) {
-            if (!result.containsKey(i.getName())) {
+        for (Product i : itemInfoList) {
+            if (!result.containsKey(i.getClass().getName())) {
                 List<Integer> temp = new ArrayList<Integer>();
-                temp.add(i.getPrice());
-                temp.add(i.getPrice());
-                result.put(i.getName(), temp);
+                temp.add(i.price);
+                temp.add(i.price);
+                result.put(i.getClass().getName(), temp);
             }
             else {
-                List<Integer> temp = result.get(i.getName());
-                temp.set(1, temp.get(1) + i.getPrice());
-                result.put(i.getName(), temp);
+                List<Integer> temp = result.get(i.getClass().getName());
+                temp.set(1, temp.get(1) + i.price);
+                result.put(i.getClass().getName(), temp);
             }
         }
         return result;
     }
 
 
-    Map<String, List<Integer>> countItemAndCalculateSubtotal(List<ItemInfo> itemInfoList) {
+    static Map<String, List<Integer>> countItemAndCalculateSubtotal(List<Product> itemInfoList) {
         Map<String, List<Integer>> result = new HashMap<>();
         Map<String, Integer> countMap = countItem(itemInfoList);
         Map<String, List<Integer>> subTotalMap = calculateSubTotal(itemInfoList);
@@ -69,8 +69,8 @@ public class PosMachine {
         return result;
     }
 
-    public String printReceipt(List<String> barcodes) {
-        List<ItemInfo> itemInfoList = getItemInfo(barcodes);
+    public static String printReceipt(List<String> barcodes) {
+        List<Product> itemInfoList = getItemInfo(barcodes);
         Map<String, List<Integer>> itemCountAndSubTotal = countItemAndCalculateSubtotal(itemInfoList);
         Integer total = 0;
         String str = "***<store earning no money>Receipt***\n";

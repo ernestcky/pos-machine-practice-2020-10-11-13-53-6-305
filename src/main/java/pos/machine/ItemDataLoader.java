@@ -1,18 +1,21 @@
 package pos.machine;
 
+import products.Battery;
+import products.CocaCola;
+import products.Product;
+import products.Sprite;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ItemDataLoader {
-    public static List<ItemInfo> loadAllItemInfos() {
-        ItemInfo item1Info = new ItemInfo("ITEM000000", "Coca-Cola", 3);
-        ItemInfo item2Info = new ItemInfo("ITEM000001", "Sprite", 3);
-        ItemInfo item3Info = new ItemInfo("ITEM000004", "Battery", 2);
-        List<ItemInfo> itemInfos = new ArrayList<>();
-        itemInfos.add(item1Info);
-        itemInfos.add(item2Info);
-        itemInfos.add(item3Info);
+    public static List<Product> loadAllItemInfos() {
+
+        List<Product> itemInfos = new ArrayList<>();
+        itemInfos.add(new CocaCola());
+        itemInfos.add(new Sprite());
+        itemInfos.add(new Battery());
 
         return itemInfos;
     }
