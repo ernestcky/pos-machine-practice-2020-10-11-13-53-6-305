@@ -1,9 +1,6 @@
 package pos.machine;
 
-import products.Battery;
-import products.CocaCola;
 import products.Product;
-import products.Sprite;
 
 import java.util.ArrayList;
 import java.util.Arrays;
