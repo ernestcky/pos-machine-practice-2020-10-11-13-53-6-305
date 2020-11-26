@@ -1,79 +1,54 @@
 package pos.machine;
 
-import products.Product;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class PosMachine {
 
-    List<Product> getItemInfo(List<String> barcodes) {
-        List<Product> itemInfos = ItemDataLoader.loadAllItemInfos();
-        List<Product> result = new ArrayList<>();
-        for (String barcode : barcodes) {
-            for (Product item : itemInfos) {
-                if (item.getBarcode().equals(barcode))
-                    result.add(item);
-            }
-        }
-        return result;
+    private static ItemDetails generateItemDetail(List<ItemInfo> itemInfoList, String barcode) {
+        ItemInfo item = itemInfoList.stream().filter(ItemInfo -> ItemInfo.getBarcode().equals(barcode)).findFirst().get();
+        return new ItemDetails(item.getName(), item.getBarcode(), 1, item.getPrice(), 0);
     }
 
-    void countItem(Map<Product, Integer> countMap, List<Product> itemInfoList) {
-        itemInfoList.stream().forEach(
-                item -> {
-                    if (countMap.containsKey(item)) {
-                        countMap.put(item, countMap.get(item) + 1);
-                    } else {
-                        countMap.put(item, 1);
-                    }
-                }
+    private static List<ItemDetails> countItems(List<String> barcodes, List<ItemDetails> itemDetailsList) {
+        itemDetailsList.forEach(itemInfo -> {
+            itemInfo.setQuantity(Collections.frequency(barcodes, itemInfo.getBarcode()));
+            itemInfo.setSubTotal(itemInfo.getQuantity() * itemInfo.getUnitPrice());
+        });
+        return itemDetailsList;
+    }
+
+    public static List<ItemDetails> getItemInfo(List<String> barcodes) {
+        List<ItemDetails> itemDetailsList = new ArrayList<>();
+        List<ItemInfo> ITEM_INFOS = ItemDataLoader.loadAllItemInfos();
+        List<ItemDetails> itemInfoList = new ArrayList<>();
+        List<String> uniqueBarcodes = barcodes.stream().distinct().collect(Collectors.toList());
+        uniqueBarcodes.forEach(barcode -> itemDetailsList.add(generateItemDetail(ITEM_INFOS, barcode)));
+        return countItems(barcodes, itemDetailsList);
+    }
+
+    String generateMessage(List<String> barcodeList) {
+        StringBuilder message = new StringBuilder();
+        List<ItemDetails> itemInfoDetails = getItemInfo(barcodeList);
+        int total = itemInfoDetails.stream().mapToInt(ItemDetails::getSubTotal).sum();
+
+        itemInfoDetails.stream().forEach(
+                itemDetails -> message.append(
+                        String.format("Name: %s, Quantity: %d, Unit price: %d (yuan), Subtotal: %d (yuan)\n", itemDetails.getName(), itemDetails.getQuantity(), itemDetails.getUnitPrice(), itemDetails.getSubTotal()))
         );
-    }
 
-    Map<String, List<Integer>> calculateSubTotal(List<Product> itemInfoList) {
-        Map<String, List<Integer>> result = new HashMap<>();
-        for (Product product : itemInfoList) {
-            if (!result.containsKey(product.getName())) {
-                List<Integer> unitPriceAndSubtotal = new ArrayList<Integer>();
-                unitPriceAndSubtotal.add(product.getPrice());
-                unitPriceAndSubtotal.add(product.getPrice());
-                result.put(product.getName(), unitPriceAndSubtotal);
-            } else {
-                List<Integer> unitPriceAndSubtotal = result.get(product.getName());
-                unitPriceAndSubtotal.set(1, unitPriceAndSubtotal.get(1) + product.getPrice());
-                result.put(product.getName(), unitPriceAndSubtotal);
-            }
-        }
-        return result;
-    }
+        message.append("----------------------\n");
+        message.append("Total: ").append(total).append(" (yuan)\n");
+        message.append("**********************");
 
-    String countItemAndCalculateSubtotal(List<Product> itemInfoList) {
-        StringBuilder result = new StringBuilder();
-        for (Map.Entry<Product, Integer> count : countMap.entrySet()) {
-            result
-                    .append("Name: ")
-                    .append(count.getKey().getName())
-                    .append(", Quantity: ")
-                    .append(count.getValue())
-                    .append(", Unit price: ")
-                    .append(count.getKey().getPrice())
-                    .append(" (yuan), Subtotal: ")
-                    .append(count.getKey().getPrice() * count.getValue()).append(" (yuan)\n");
-
-        }
-        return result.toString();
+        return message.toString();
     }
 
     public String printReceipt(List<String> barcodes) {
-        List<Product> itemInfoList = getItemInfo(barcodes);
-        int total = 0;
-        StringBuilder str = new StringBuilder("***<store earning no money>Receipt***\n");
+        StringBuilder receipt = new StringBuilder("***<store earning no money>Receipt***\n");
 
-        str.append(countItemAndCalculateSubtotal(itemInfoList));
-        str.append("----------------------\n");
-        str.append("Total: ").append(total).append(" (yuan)\n");
-        str.append("**********************");
-        return str.toString();
+        receipt.append(generateMessage(barcodes));
+
+        return receipt.toString();
     }
 }

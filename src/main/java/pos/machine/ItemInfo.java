@@ -1,57 +1,25 @@
 package pos.machine;
 
 public class ItemInfo {
-    private String name;
-    private String barcode;
-    private int quantity;
-    private int unitPrice;
-    private int subTotal;
+    private final String barcode;
+    private final String name;
+    private final int price;
+
+    public ItemInfo(String barcode, String name, int price) {
+        this.barcode = barcode;
+        this.name = name;
+        this.price = price;
+    }
 
     public String getBarcode() {
         return barcode;
-    }
-
-    public void setBarcode(String barcode) {
-        this.barcode = barcode;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ItemInfo(String name, String barcode, int quantity, int unitPrice, int subTotal) {
-        this.name = name;
-        this.barcode = barcode;
-        this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.subTotal = subTotal;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public int getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(int unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public int getSubTotal() {
-        return subTotal;
-    }
-
-    public void setSubTotal(int subTotal) {
-        this.subTotal = subTotal;
+    public int getPrice() {
+        return price;
     }
 }
