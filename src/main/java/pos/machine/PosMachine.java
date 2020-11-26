@@ -21,7 +21,6 @@ public class PosMachine {
     public static List<ItemDetails> getItemInfo(List<String> barcodes) {
         List<ItemDetails> itemDetailsList = new ArrayList<>();
         List<ItemInfo> ITEM_INFOS = ItemDataLoader.loadAllItemInfos();
-        List<ItemDetails> itemInfoList = new ArrayList<>();
         List<String> uniqueBarcodes = barcodes.stream().distinct().collect(Collectors.toList());
         uniqueBarcodes.forEach(barcode -> itemDetailsList.add(generateItemDetail(ITEM_INFOS, barcode)));
         return countItems(barcodes, itemDetailsList);
