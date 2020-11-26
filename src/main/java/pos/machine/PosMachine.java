@@ -5,13 +5,12 @@ import products.Product;
 import java.util.*;
 
 public class PosMachine {
-    public static List<Product> ITEM_INFOS = ItemDataLoader.loadAllItemInfos();
 
     static List<Product> getItemInfo(List<String> barcodes) {
-        List<Product> test = ItemDataLoader.loadAllItemInfos();
+        List<Product> itemInfos = ItemDataLoader.loadAllItemInfos();
         List<Product> result = new ArrayList<>();
         for (String barcode : barcodes) {
-            for (Product item : test) {
+            for (Product item : itemInfos) {
                 if (item.getBarcode().equals(barcode))
                     result.add(item);
             }
@@ -21,11 +20,11 @@ public class PosMachine {
 
     static Map<String, Integer> countItem(List<Product> itemInfoList) {
         Map<String, Integer> result = new HashMap();
-        for (Product i : itemInfoList) {
-            if (!result.containsKey(i.getName())) {
-                result.put(i.getName(), 1);
+        for (Product product : itemInfoList) {
+            if (!result.containsKey(product.getName())) {
+                result.put(product.getName(), 1);
             } else {
-                result.put(i.getName(), result.get(i.getName()) + 1);
+                result.put(product.getName(), result.get(product.getName()) + 1);
             }
         }
         return result;
@@ -33,21 +32,20 @@ public class PosMachine {
 
     static Map<String, List<Integer>> calculateSubTotal(List<Product> itemInfoList) {
         Map<String, List<Integer>> result = new HashMap<>();
-        for (Product i : itemInfoList) {
-            if (!result.containsKey(i.getName())) {
-                List<Integer> temp = new ArrayList<Integer>();
-                temp.add(i.getPrice());
-                temp.add(i.getPrice());
-                result.put(i.getName(), temp);
+        for (Product product : itemInfoList) {
+            if (!result.containsKey(product.getName())) {
+                List<Integer> unitPriceAndSubtotal = new ArrayList<Integer>();
+                unitPriceAndSubtotal.add(product.getPrice());
+                unitPriceAndSubtotal.add(product.getPrice());
+                result.put(product.getName(), unitPriceAndSubtotal);
             } else {
-                List<Integer> temp = result.get(i.getName());
-                temp.set(1, temp.get(1) + i.getPrice());
-                result.put(i.getName(), temp);
+                List<Integer> unitPriceAndSubtotal = result.get(product.getName());
+                unitPriceAndSubtotal.set(1, unitPriceAndSubtotal.get(1) + product.getPrice());
+                result.put(product.getName(), unitPriceAndSubtotal);
             }
         }
         return result;
     }
-
 
     static Map<String, ItemInfo> countItemAndCalculateSubtotal(List<Product> itemInfoList) {
         Map<String, ItemInfo> result = new HashMap<>();
@@ -67,16 +65,16 @@ public class PosMachine {
     public static String printReceipt(List<String> barcodes) {
         List<Product> itemInfoList = getItemInfo(barcodes);
         Map<String, ItemInfo> itemCountAndSubTotal = countItemAndCalculateSubtotal(itemInfoList);
-        Integer total = 0;
-        String str = "***<store earning no money>Receipt***\n";
+        int total = 0;
+        StringBuilder str = new StringBuilder("***<store earning no money>Receipt***\n");
 
         for (Map.Entry<String, ItemInfo> item : itemCountAndSubTotal.entrySet()) {
             total += item.getValue().getSubTotal();
-            str += "Name: " + item.getKey() + ", Quantity: " + item.getValue().getQuantity() + ", Unit price: " + item.getValue().getUnitPrice() + " (yuan), Subtotal: " + item.getValue().getSubTotal() + " (yuan)\n";
+            str.append("Name: ").append(item.getKey()).append(", Quantity: ").append(item.getValue().getQuantity()).append(", Unit price: ").append(item.getValue().getUnitPrice()).append(" (yuan), Subtotal: ").append(item.getValue().getSubTotal()).append(" (yuan)\n");
         }
-        str += "----------------------\n";
-        str += "Total: " + total + " (yuan)\n";
-        str += "**********************";
-        return str;
+        str.append("----------------------\n");
+        str.append("Total: ").append(total).append(" (yuan)\n");
+        str.append("**********************");
+        return str.toString();
     }
 }
